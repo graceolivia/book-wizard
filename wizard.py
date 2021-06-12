@@ -29,16 +29,46 @@ def display_list(the_list):
 		print("  Author: " + n.author)
 		print("  Publisher: " + n.publisher)
 
-# handles yes/no query
+# handles yes/no query user input
 def yn(question):
-	value = input(question + " (y/n):")
-	if (value == "y"):
-		return True
-	elif (value == "n"):
+	value = input(question + " (y/n): ")
+	if (v_yn(value)==True):
+		if (value == "y"):
+			return True
 		return False
 	else:
-		print("Please answer [y/n].")
 		return yn(question)
+
+# validates yes/no query
+def v_yn(value):
+	if (value == "y" or value == "n"):
+		return True
+	else:
+		print("Enter y or n.")
+		return False
+
+# handles 1-5 selection user input
+def list_pick(question):		
+	value = input(question)
+	if list_val(value, question) == True:
+		return int(value)
+	else:
+		return list_pick(question)
+
+
+
+# validates 1-5 selection user input
+def list_val(value, question):
+	try:
+		num = int(value)
+	except: 
+		print("Please make a selection from 1-5.")
+		return False
+	if (num < 1 or num > 5):
+		print("Please make a selection from 1-5.")
+		return False
+	return True
+
 
 # queries API
 def api_call(q, storage):
@@ -70,35 +100,34 @@ def api_call(q, storage):
 
 # ask user if they want to add books
 
-def book_adder(search_results, user_list):
-	add_q = yn("Add Book To List?") 
-	print(str(add_q))
-	if (add_q == True):
-		to_add = input("Enter the list number of the book to add: ")
-		index = int(to_add)
-		reading_list.append(results[index -1])
-		#show current reading list:
-		print("Your Current List:")
-		display_list(user_list)
-		book_adder(search_results, user_list)
+def book_adder(search_results, user_list, index):
+	reading_list.append(results[index -1])
+	#show current reading list:
+	print("Your Current List:")
+	display_list(user_list)
 	return
 
-# User Loop
-while True:
-	cont = yn("Ready To Search?") 
-	if cont == True:
-		results=[]
-		q = input("Enter your query: ")
-		api_call(q, results)
-		print("Your Results:")
-		display_list(results)
-		book_adder(results, reading_list)
-	elif cont == False:
-		print("BREAK")
-		break
-
-
-
+if __name__ == '__main__':
+	# User Loop
+	while True:
+		cont = yn("Ready To Search?")
+		if cont == True:
+			# Clear out previous search results, if any
+			results=[]
+			q = input("Enter your query: ")
+			api_call(q, results)
+			print("Your Results:")
+			display_list(results)
+			add = yn("Add book to your list?")
+			while add == True:
+				number = list_pick("Enter the list number of the book to add (Pick 1-5): ")
+				# this should GIVE BACK a number that works
+				book_adder(results, reading_list, number)
+				add = yn("Add book to your list?")
+			continue
+		elif cont == False:
+			print("Goodbye!")
+			break
 
 
 
