@@ -28,6 +28,7 @@ def display_list(the_list):
 		print("  Title: " + n.title)
 		print("  Author: " + n.author)
 		print("  Publisher: " + n.publisher)
+		
 
 # handles yes/no query user input
 def yn(question):
@@ -50,15 +51,14 @@ def v_yn(value):
 # handles 1-5 selection user input
 def list_pick(question):		
 	value = input(question)
-	if list_val(value, question) == True:
+	if list_val(value) == True:
 		return int(value)
 	else:
 		return list_pick(question)
 
 
-
 # validates 1-5 selection user input
-def list_val(value, question):
+def list_val(value):
 	try:
 		num = int(value)
 	except: 
@@ -70,38 +70,40 @@ def list_val(value, question):
 	return True
 
 
-# queries API
-def api_call(q, storage):
-	# empty storage
-	parameters = {'q':q, 'maxResults':5}
-	# ERROR HANDLING NEEDED HERE
-	r = requests.get("https://www.googleapis.com/books/v1/volumes", params=parameters)
-	data = r.json()
-	# print(data)
-		# add data
+# unpack API info
+def json_unpack(data):
+	shelf = []
 	for item in data["items"]:
-		# print(n)
 		if 'title' not in item['volumeInfo']:
 			title = ""
 		else:
 			title=item["volumeInfo"]["title"]
-		# print(title)
 		if 'authors' not in item['volumeInfo']:
 			author = ""
 		else:
 			author=item["volumeInfo"]["authors"][0]
-		# print(authors)
 		if 'publisher' not in item['volumeInfo']:
 			publisher= ""
 		else:
 			publisher=item["volumeInfo"]["publisher"]
 		# print(publisher)
-		storage.append( Book(title, author, publisher))
+		shelf.append( Book(title, author, publisher))
+	return shelf
 
-# ask user if they want to add books
+
+# queries API
+def api_call(q):
+	parameters = {'q':q, 'maxResults':5}
+	r = requests.get("https://www.googleapis.com/books/v1/volumes", params=parameters)
+	if r:
+		data = r.json()
+		return data
+	print("No results. Please enter valid query.")
+	return False
+
 
 def book_adder(search_results, user_list, index):
-	reading_list.append(results[index -1])
+	reading_list.append(search_results[index -1])
 	#show current reading list:
 	print("Your Current List:")
 	display_list(user_list)
@@ -113,17 +115,19 @@ if __name__ == '__main__':
 		cont = yn("Ready To Search?")
 		if cont == True:
 			# Clear out previous search results, if any
-			results=[]
 			q = input("Enter your query: ")
-			api_call(q, results)
-			print("Your Results:")
-			display_list(results)
-			add = yn("Add book to your list?")
-			while add == True:
-				number = list_pick("Enter the list number of the book to add (Pick 1-5): ")
-				# this should GIVE BACK a number that works
-				book_adder(results, reading_list, number)
+			results = api_call(q)
+			if results:
+				bookshelf = json_unpack(results)
+				print("Your Results:")
+				display_list(bookshelf)
 				add = yn("Add book to your list?")
+				while add == True:
+					number = list_pick("Enter the list number of the book to add (Pick 1-5): ")
+					# this should GIVE BACK a number that works
+					book_adder(bookshelf, reading_list, number)
+					add = yn("Add book to your list?")
+				continue
 			continue
 		elif cont == False:
 			print("Goodbye!")
