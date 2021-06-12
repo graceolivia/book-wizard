@@ -24,6 +24,9 @@ class YesNo(unittest.TestCase):
    def test_user_input_5_num(self):
        result = list_val("5")
        self.assertEqual(result, True)
+   def test_user_input_fail(self):
+   		result = api_call("")
+   		self.assertEqual(result, False)
 
 
 if __name__ == '__main__':
