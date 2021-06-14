@@ -6,10 +6,9 @@ import json
 
 # Important Variables
 
-# holds current search results
-results=[]
 # holds ongoing reading list
 reading_list=[]
+
 
 #object to store book data
 class Book:
@@ -22,6 +21,7 @@ class Book:
 
 # displays info in list of results
 def display_list(the_list):
+	# add functionality for empty list
 	for (i, n) in enumerate(the_list, start=1):
 		print(i, end='')
 		print(".")
@@ -101,7 +101,7 @@ def api_call(q):
 	print("No results. Please enter valid query.")
 	return False
 
-
+# adds a book from the current API call to the user's reading lst
 def book_adder(search_results, user_list, index):
 	reading_list.append(search_results[index -1])
 	#show current reading list:
@@ -109,11 +109,25 @@ def book_adder(search_results, user_list, index):
 	display_list(user_list)
 	return
 
+
+# prints the menu and allows the user to pick which option to use
+def menu_pick():
+	print("Menu:")
+	print("1. Search For Books")
+	print("2. View your reading list")
+	print("3. Quit")
+	choice = input("Pick your menu item: ")
+	if (choice == "1" or choice == "2" or choice == "3"):
+		return choice
+	print("Please enter valid number.")
+	return menu_pick()
+
+# this is so that the whole application doesn't run when we run the testing suite
 if __name__ == '__main__':
 	# User Loop
 	while True:
-		cont = yn("Ready To Search?")
-		if cont == True:
+		choice = menu_pick()
+		if choice == "1":
 			# Clear out previous search results, if any
 			q = input("Enter your query: ")
 			results = api_call(q)
@@ -129,7 +143,10 @@ if __name__ == '__main__':
 					add = yn("Add book to your list?")
 				continue
 			continue
-		elif cont == False:
+		elif choice == "2":
+			print("Your Current List:")
+			display_list(reading_list)
+		else:
 			print("Goodbye!")
 			break
 
