@@ -101,7 +101,7 @@ def api_call(q):
 	print("No results. Please enter valid query.")
 	return False
 
-# adds a book from the current API call to the user's reading lst
+# adds a book from the current API call to the user's reading list
 def book_adder(search_results, user_list, index):
 	reading_list.append(search_results[index -1])
 	#show current reading list:
