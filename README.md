@@ -13,8 +13,11 @@ A command line application that allows you to use the Google Books API to search
 After completing steps 1-3 above, run `python3 -m unittest tests.py` to run all tests.
 
 You can also run individual tests with the following command structures:
+
 `python3 -m unittest [module].[class].[test name]`
+
 So, for example, to run only test_yes_or_no_y test in the YesNo class, you would use:
+
 `python3 -m unittest tests.YesNo.test_yn_y`
 
 
