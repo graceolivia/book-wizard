@@ -18,7 +18,7 @@ You can also run individual tests with the following command structures:
 
 So, for example, to run only test_yes_or_no_y test in the YesNo class, you would use:
 
-`python3 -m unittest tests.YesNo.test_yn_y`
+`python3 -m unittest tests.YesNo.test_yes_or_no_y`
 
 
 # Notes
